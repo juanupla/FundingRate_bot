@@ -357,7 +357,7 @@ export default function App() {
                 </tr>
               </thead>
               <tbody>
-                {(scanner?.pares || []).map(p => {
+                {([...(scanner?.pares || [])].sort((a, b) => (b.score || 0) - (a.score || 0))).map(p => {
                   const isBull = (p.predicted_funding_rate || 0) >= 0.0005;
                   const isBear = (p.predicted_funding_rate || 0) <= -0.0005;
                   const isAnom = p.es_anomalo;
