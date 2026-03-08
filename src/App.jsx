@@ -123,6 +123,11 @@ export default function App() {
   }, [fetchAll]);
 
   const controlarBot = async (accion) => {
+    const pwd = prompt("🔐 Contraseña requerida:");
+    if (pwd !== "ellobo126") {
+      alert("❌ Contraseña incorrecta");
+      return;
+    }
     setAccionando(true);
     try {
       await apiPost("/api/bot/control", { accion });
