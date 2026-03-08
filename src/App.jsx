@@ -156,6 +156,7 @@ export default function App() {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div style={{ minHeight: "100vh", background: "#080808", color: "#e0e0e0",
+      fontFamily: "'Inter', sans-serif", margin: 0, padding: 0, width: "100%", boxSizing: "border-box" }}>
       fontFamily: "'DM Sans', sans-serif" }}>
       <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
