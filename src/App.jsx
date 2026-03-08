@@ -95,10 +95,9 @@ export default function App() {
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading]     = useState(true);
   const [error, setError]         = useState(null);
-  const [tab, setTab]             = useState("dashboard"); // dashboard | scanner | historial | config
+  const [tab, setTab]             = useState("dashboard");
   const [accionando, setAccionando] = useState(false);
 
-  // ── Polling ────────────────────────────────────────────────────────────────
   const fetchAll = useCallback(async () => {
     try {
       const [s, sc, h] = await Promise.all([
@@ -123,7 +122,6 @@ export default function App() {
     return () => clearInterval(iv);
   }, [fetchAll]);
 
-  // ── Acciones ───────────────────────────────────────────────────────────────
   const controlarBot = async (accion) => {
     setAccionando(true);
     try {
@@ -149,22 +147,20 @@ export default function App() {
     }
   };
 
-  const botActivo           = status?.bot_activo || false;
-  const circuitBreaker      = status?.circuit_breaker || false;
-  const posicionesActivas   = Object.values(status?.posiciones || {});
+  const botActivo         = status?.bot_activo || false;
+  const circuitBreaker    = status?.circuit_breaker || false;
+  const posicionesActivas = Object.values(status?.posiciones || {});
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div style={{ minHeight: "100vh", background: "#080808", color: "#e0e0e0",
       fontFamily: "'Inter', sans-serif", margin: 0, padding: 0, width: "100%", boxSizing: "border-box" }}>
-      fontFamily: "'DM Sans', sans-serif" }}>
+
       <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      {/* Header */}
       <div style={{ borderBottom: "1px solid #161616", padding: "14px 28px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
         background: "#0a0a0a", position: "sticky", top: 0, zIndex: 100 }}>
-
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div style={{ width: 32, height: 32, background: "linear-gradient(135deg, #f7931a, #ff6b00)",
             borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",
@@ -178,7 +174,6 @@ export default function App() {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          {/* Indicador de estado */}
           {error ? (
             <div style={{ fontSize: 11, color: "#ff4444", fontFamily: "'Space Mono', monospace" }}>
               <GlowDot active={false} /> OFFLINE
@@ -193,19 +188,13 @@ export default function App() {
               <GlowDot active={botActivo} /> {botActivo ? "ACTIVO" : "DETENIDO"}
             </div>
           )}
-
-          {/* Botón de emergencia */}
-          <button onClick={() => controlarBot("pausa_emergencia")}
-            disabled={accionando}
+          <button onClick={() => controlarBot("pausa_emergencia")} disabled={accionando}
             style={{ padding: "6px 14px", borderRadius: 5, border: "1px solid #ff444440",
               background: "#1a0505", color: "#ff4444", cursor: "pointer",
               fontSize: 10, fontFamily: "'Space Mono', monospace", letterSpacing: 1 }}>
             🚨 EMERGENCIA
           </button>
-
-          {/* Botón principal */}
-          <button onClick={() => controlarBot(botActivo ? "detener" : "iniciar")}
-            disabled={accionando}
+          <button onClick={() => controlarBot(botActivo ? "detener" : "iniciar")} disabled={accionando}
             style={{ padding: "8px 20px", borderRadius: 6, border: "none", cursor: "pointer",
               fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700, letterSpacing: 1,
               background: botActivo ? "#1a0a0a" : "#0a1a0a",
@@ -217,7 +206,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* ── Error banner ───────────────────────────────────────────────────── */}
+      {/* Error banner */}
       {error && (
         <div style={{ background: "#1a0505", borderBottom: "1px solid #ff444430",
           padding: "10px 28px", fontSize: 12, color: "#ff6666" }}>
@@ -225,7 +214,7 @@ export default function App() {
         </div>
       )}
 
-      {/* ── Tabs ───────────────────────────────────────────────────────────── */}
+      {/* Tabs */}
       <div style={{ borderBottom: "1px solid #161616", padding: "0 28px",
         display: "flex", gap: 4, background: "#0a0a0a" }}>
         {[
@@ -244,27 +233,22 @@ export default function App() {
         ))}
       </div>
 
-      {/* ── Contenido ──────────────────────────────────────────────────────── */}
+      {/* Contenido */}
       <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 20 }}>
 
-        {/* ════════════════ DASHBOARD ════════════════ */}
+        {/* DASHBOARD */}
         {tab === "dashboard" && (
           <>
-            {/* Stats */}
             <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
               <StatCard label="PnL Realizado" loading={loading}
-                value={fmt$(status?.pnl_realizado_total)}
-                sub="Trades cerrados"
+                value={fmt$(status?.pnl_realizado_total)} sub="Trades cerrados"
                 accent={status?.pnl_realizado_total >= 0 ? "#00ff88" : "#ff6b6b"} />
               <StatCard label="Funding Cobrado" loading={loading}
-                value={fmt$(status?.funding_cobrado_total)}
-                sub="Acumulado total" accent="#f7931a" />
+                value={fmt$(status?.funding_cobrado_total)} sub="Acumulado total" accent="#f7931a" />
               <StatCard label="Posiciones Activas" loading={loading}
-                value={posicionesActivas.length}
-                sub={`Máx ${status?.max_posiciones || 4}`} />
+                value={posicionesActivas.length} sub={`Máx ${status?.max_posiciones || 4}`} />
               <StatCard label="Balance Spot" loading={loading}
-                value={fmt$(status?.balance_spot?.USDT)}
-                sub="USDT disponible" />
+                value={fmt$(status?.balance_spot?.USDT)} sub="USDT disponible" />
               <StatCard label="Balance Futuros" loading={loading}
                 value={fmt$(status?.balance_futures?.USDT)}
                 sub={`PnL no real: ${fmt$(status?.balance_futures?.unrealized_pnl)}`}
@@ -275,24 +259,18 @@ export default function App() {
                 accent="#f3ba2f" />
             </div>
 
-            {/* Posiciones abiertas */}
             <div style={{ background: "#0d0d0d", border: "1px solid #1e1e1e", borderRadius: 10 }}>
               <div style={{ padding: "14px 20px", borderBottom: "1px solid #161616",
                 display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ fontSize: 11, fontFamily: "'Space Mono', monospace",
-                  letterSpacing: 2, color: "#888", textTransform: "uppercase" }}>
-                  Posiciones Abiertas
-                </span>
+                  letterSpacing: 2, color: "#888", textTransform: "uppercase" }}>Posiciones Abiertas</span>
                 <span style={{ fontSize: 11, color: "#444", fontFamily: "'Space Mono', monospace" }}>
                   {posicionesActivas.length} / {status?.max_posiciones || 4}
                 </span>
               </div>
-
               {posicionesActivas.length === 0 ? (
                 <div style={{ padding: "40px", textAlign: "center", color: "#333",
-                  fontFamily: "'Space Mono', monospace", fontSize: 12 }}>
-                  Sin posiciones abiertas
-                </div>
+                  fontFamily: "'Space Mono', monospace", fontSize: 12 }}>Sin posiciones abiertas</div>
               ) : (
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
@@ -307,33 +285,19 @@ export default function App() {
                   <tbody>
                     {posicionesActivas.map(pos => (
                       <tr key={pos.symbol} style={{ borderBottom: "1px solid #111" }}>
-                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                          fontSize: 12, fontWeight: 700 }}>{pos.symbol}</td>
+                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 700 }}>{pos.symbol}</td>
                         <td style={{ padding: "12px 14px" }}><DireccionBadge dir={pos.direccion} /></td>
-                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                          fontSize: 12, color: "#ccc" }}>{fmt$(pos.capital)}</td>
-                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                          fontSize: 12, color: "#888" }}>{fmt$(pos.precio_entrada_spot)}</td>
-                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                          fontSize: 12, color: "#ccc" }}>{fmt$(pos.precio_actual)}</td>
-                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                          fontSize: 12, color: pos.pnl_precio >= 0 ? "#00ff88" : "#ff6b6b",
-                          fontWeight: 700 }}>
-                          {fmt$(pos.pnl_precio)}
-                        </td>
-                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                          fontSize: 12, color: "#f7931a" }}>{fmt$(pos.funding_cobrado)}</td>
-                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                          fontSize: 12, color: "#888" }}>{pos.ciclos_cobrados || 0}</td>
+                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#ccc" }}>{fmt$(pos.capital)}</td>
+                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#888" }}>{fmt$(pos.precio_entrada_spot)}</td>
+                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#ccc" }}>{fmt$(pos.precio_actual)}</td>
+                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, color: pos.pnl_precio >= 0 ? "#00ff88" : "#ff6b6b", fontWeight: 700 }}>{fmt$(pos.pnl_precio)}</td>
+                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#f7931a" }}>{fmt$(pos.funding_cobrado)}</td>
+                        <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#888" }}>{pos.ciclos_cobrados || 0}</td>
                         <td style={{ padding: "12px 14px" }}>
-                          <button onClick={() => cerrarPosicion(pos.symbol)}
-                            disabled={accionando}
-                            style={{ padding: "4px 12px", borderRadius: 4,
-                              border: "1px solid #ff444430", background: "#1a0505",
-                              color: "#ff4444", cursor: "pointer",
-                              fontSize: 10, fontFamily: "'Space Mono', monospace" }}>
-                            CERRAR
-                          </button>
+                          <button onClick={() => cerrarPosicion(pos.symbol)} disabled={accionando}
+                            style={{ padding: "4px 12px", borderRadius: 4, border: "1px solid #ff444430",
+                              background: "#1a0505", color: "#ff4444", cursor: "pointer",
+                              fontSize: 10, fontFamily: "'Space Mono', monospace" }}>CERRAR</button>
                         </td>
                       </tr>
                     ))}
@@ -342,28 +306,19 @@ export default function App() {
               )}
             </div>
 
-            {/* Circuit breaker / lista negra */}
             {(circuitBreaker || (status?.lista_negra?.length > 0)) && (
               <div style={{ display: "flex", gap: 14 }}>
                 {circuitBreaker && (
-                  <div style={{ flex: 1, background: "#1a0a00", border: "1px solid #f7931a30",
-                    borderRadius: 8, padding: "16px 20px" }}>
-                    <div style={{ fontSize: 11, color: "#f7931a", fontFamily: "'Space Mono', monospace",
-                      letterSpacing: 2, marginBottom: 8 }}>⚡ CIRCUIT BREAKER ACTIVO</div>
-                    <div style={{ fontSize: 12, color: "#888" }}>
-                      Hasta: {status?.circuit_breaker_hasta ? fmtTime(status.circuit_breaker_hasta) : "—"}
-                    </div>
+                  <div style={{ flex: 1, background: "#1a0a00", border: "1px solid #f7931a30", borderRadius: 8, padding: "16px 20px" }}>
+                    <div style={{ fontSize: 11, color: "#f7931a", fontFamily: "'Space Mono', monospace", letterSpacing: 2, marginBottom: 8 }}>⚡ CIRCUIT BREAKER ACTIVO</div>
+                    <div style={{ fontSize: 12, color: "#888" }}>Hasta: {status?.circuit_breaker_hasta ? fmtTime(status.circuit_breaker_hasta) : "—"}</div>
                   </div>
                 )}
                 {status?.lista_negra?.length > 0 && (
-                  <div style={{ flex: 1, background: "#0d0d0d", border: "1px solid #1e1e1e",
-                    borderRadius: 8, padding: "16px 20px" }}>
-                    <div style={{ fontSize: 11, color: "#888", fontFamily: "'Space Mono', monospace",
-                      letterSpacing: 2, marginBottom: 8 }}>🚫 LISTA NEGRA</div>
+                  <div style={{ flex: 1, background: "#0d0d0d", border: "1px solid #1e1e1e", borderRadius: 8, padding: "16px 20px" }}>
+                    <div style={{ fontSize: 11, color: "#888", fontFamily: "'Space Mono', monospace", letterSpacing: 2, marginBottom: 8 }}>🚫 LISTA NEGRA</div>
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      {status.lista_negra.map(s => (
-                        <Badge key={s} label={s} color="#ff6b6b" />
-                      ))}
+                      {status.lista_negra.map(s => <Badge key={s} label={s} color="#ff6b6b" />)}
                     </div>
                   </div>
                 )}
@@ -372,13 +327,12 @@ export default function App() {
           </>
         )}
 
-        {/* ════════════════ SCANNER ════════════════ */}
+        {/* SCANNER */}
         {tab === "scanner" && (
           <div style={{ background: "#0d0d0d", border: "1px solid #1e1e1e", borderRadius: 10 }}>
             <div style={{ padding: "14px 20px", borderBottom: "1px solid #161616",
               display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 11, fontFamily: "'Space Mono', monospace",
-                letterSpacing: 2, color: "#888", textTransform: "uppercase" }}>
+              <span style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", letterSpacing: 2, color: "#888", textTransform: "uppercase" }}>
                 Scanner de Funding Rate — {scanner?.pares?.length || 0} pares
               </span>
               <span style={{ fontSize: 10, color: "#444", fontFamily: "'Space Mono', monospace" }}>
@@ -401,41 +355,33 @@ export default function App() {
                   const isAnom = p.es_anomalo;
                   return (
                     <tr key={p.symbol} style={{ borderBottom: "1px solid #111" }}>
-                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                        fontSize: 12, fontWeight: 700 }}>
+                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 700 }}>
                         {isOpp && !isAnom && <span style={{ color: "#f7931a", marginRight: 6 }}>●</span>}
                         {isAnom && <span style={{ color: "#ff4444", marginRight: 6 }}>⚠</span>}
                         {p.symbol}
                       </td>
-                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                        fontSize: 12, color: "#ccc" }}>${Number(p.precio || 0).toLocaleString()}</td>
-                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                        fontSize: 12, color: p.funding_rate > 0 ? "#00ff88" : p.funding_rate < 0 ? "#ff6b6b" : "#555",
-                        fontWeight: 700 }}>
+                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#ccc" }}>${Number(p.precio || 0).toLocaleString()}</td>
+                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12,
+                        color: p.funding_rate > 0 ? "#00ff88" : p.funding_rate < 0 ? "#ff6b6b" : "#555", fontWeight: 700 }}>
                         {fmtPct(p.funding_rate)}
                       </td>
-                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                        fontSize: 12, color: p.predicted_funding_rate > 0 ? "#a78bfa" : p.predicted_funding_rate < 0 ? "#ff9966" : "#555",
-                        fontWeight: 700 }}>
+                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12,
+                        color: p.predicted_funding_rate > 0 ? "#a78bfa" : p.predicted_funding_rate < 0 ? "#ff9966" : "#555", fontWeight: 700 }}>
                         {fmtPct(p.predicted_funding_rate)}
                       </td>
-                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                        fontSize: 12, color: "#888" }}>
+                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#888" }}>
                         {p.score ? (p.score * 100).toFixed(1) : "—"}
                       </td>
-                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                        fontSize: 11, color: "#555" }}>
+                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#555" }}>
                         {p.volumen_24h ? `$${(p.volumen_24h / 1e6).toFixed(0)}M` : "—"}
                       </td>
+                      <td style={{ padding: "12px 14px" }}><DireccionBadge dir={p.direccion} /></td>
                       <td style={{ padding: "12px 14px" }}>
-                        <DireccionBadge dir={p.direccion} />
-                      </td>
-                      <td style={{ padding: "12px 14px" }}>
-                        {p.en_lista_negra ? <Badge label="BLOQUEADO" color="#ff4444" /> :
-                         p.es_anomalo    ? <Badge label="ANÓMALO"   color="#ff9966" /> :
-                         p.ya_en_posicion ? <Badge label="EN POSICIÓN" color="#f7931a" /> :
-                         isOpp           ? <Badge label="OPORTUNIDAD" color="#00ff88" /> :
-                                           <Badge label="BAJO THRESHOLD" color="#444" />}
+                        {p.en_lista_negra  ? <Badge label="BLOQUEADO"    color="#ff4444" /> :
+                         p.es_anomalo      ? <Badge label="ANÓMALO"      color="#ff9966" /> :
+                         p.ya_en_posicion  ? <Badge label="EN POSICIÓN"  color="#f7931a" /> :
+                         isOpp             ? <Badge label="OPORTUNIDAD"  color="#00ff88" /> :
+                                             <Badge label="BAJO THRESHOLD" color="#444" />}
                       </td>
                     </tr>
                   );
@@ -445,19 +391,16 @@ export default function App() {
           </div>
         )}
 
-        {/* ════════════════ HISTORIAL ════════════════ */}
+        {/* HISTORIAL */}
         {tab === "historial" && (
           <div style={{ background: "#0d0d0d", border: "1px solid #1e1e1e", borderRadius: 10 }}>
             <div style={{ padding: "14px 20px", borderBottom: "1px solid #161616",
-              fontSize: 11, fontFamily: "'Space Mono', monospace",
-              letterSpacing: 2, color: "#888", textTransform: "uppercase" }}>
+              fontSize: 11, fontFamily: "'Space Mono', monospace", letterSpacing: 2, color: "#888", textTransform: "uppercase" }}>
               Historial de Operaciones — {historial.length} trades
             </div>
             {historial.length === 0 ? (
               <div style={{ padding: "40px", textAlign: "center", color: "#333",
-                fontFamily: "'Space Mono', monospace", fontSize: 12 }}>
-                Sin trades cerrados aún
-              </div>
+                fontFamily: "'Space Mono', monospace", fontSize: 12 }}>Sin trades cerrados aún</div>
             ) : (
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
@@ -472,26 +415,17 @@ export default function App() {
                 <tbody>
                   {[...historial].reverse().map((t, i) => (
                     <tr key={i} style={{ borderBottom: "1px solid #111" }}>
-                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                        fontSize: 12, fontWeight: 700 }}>{t.symbol}</td>
+                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 700 }}>{t.symbol}</td>
                       <td style={{ padding: "12px 14px" }}><DireccionBadge dir={t.direccion} /></td>
-                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                        fontSize: 11, color: "#555" }}>{fmtTime(t.timestamp_apertura)}</td>
-                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                        fontSize: 11, color: "#555" }}>{fmtTime(t.timestamp_cierre)}</td>
+                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#555" }}>{fmtTime(t.timestamp_apertura)}</td>
+                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#555" }}>{fmtTime(t.timestamp_cierre)}</td>
                       <td style={{ padding: "12px 14px" }}>
-                        <Badge
-                          label={t.razon_cierre || "—"}
-                          color={t.razon_cierre === "STOP_LOSS" ? "#ff4444" :
-                                 t.razon_cierre === "MANUAL_DASHBOARD" ? "#f7931a" : "#888"} />
+                        <Badge label={t.razon_cierre || "—"}
+                          color={t.razon_cierre === "STOP_LOSS" ? "#ff4444" : t.razon_cierre === "MANUAL_DASHBOARD" ? "#f7931a" : "#888"} />
                       </td>
-                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                        fontSize: 12, color: "#f7931a" }}>{fmt$(t.funding_cobrado)}</td>
-                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace",
-                        fontSize: 12, color: t.pnl_final >= 0 ? "#00ff88" : "#ff6b6b",
-                        fontWeight: 700 }}>
-                        {fmt$(t.pnl_final)}
-                      </td>
+                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#f7931a" }}>{fmt$(t.funding_cobrado)}</td>
+                      <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12,
+                        color: t.pnl_final >= 0 ? "#00ff88" : "#ff6b6b", fontWeight: 700 }}>{fmt$(t.pnl_final)}</td>
                     </tr>
                   ))}
                 </tbody>
