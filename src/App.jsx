@@ -163,8 +163,9 @@ export default function App() {
       <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
       {/* Header */}
-      <div style={{ borderBottom: "1px solid #161616", padding: "14px 28px",
+      <div style={{ borderBottom: "1px solid #161616", padding: "12px 16px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
+        flexWrap: "wrap", gap: 10,
         background: "#0a0a0a", position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div style={{ width: 32, height: 32, background: "linear-gradient(135deg, #f7931a, #ff6b00)",
@@ -344,7 +345,8 @@ export default function App() {
                 Actualiza cada {POLL_MS/1000}s
               </span>
             </div>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid #161616" }}>
                   {["Par", "Precio", "Funding Actual", "Predicted", "Score", "Volumen 24h", "Señal", "Estado"].map(h => (
@@ -356,12 +358,13 @@ export default function App() {
               </thead>
               <tbody>
                 {(scanner?.pares || []).map(p => {
-                  const isOpp  = Math.abs(p.predicted_funding_rate || 0) >= 0.0005;
+                  const isBull = (p.predicted_funding_rate || 0) >= 0.0005;
+                  const isBear = (p.predicted_funding_rate || 0) <= -0.0005;
                   const isAnom = p.es_anomalo;
                   return (
                     <tr key={p.symbol} style={{ borderBottom: "1px solid #111" }}>
                       <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 700 }}>
-                        {isOpp && !isAnom && <span style={{ color: "#f7931a", marginRight: 6 }}>●</span>}
+                        {isBull && !isAnom && <span style={{ color: "#f7931a", marginRight: 6 }}>●</span>}
                         {isAnom && <span style={{ color: "#ff4444", marginRight: 6 }}>⚠</span>}
                         {p.symbol}
                       </td>
@@ -382,17 +385,19 @@ export default function App() {
                       </td>
                       <td style={{ padding: "12px 14px" }}><DireccionBadge dir={p.direccion} /></td>
                       <td style={{ padding: "12px 14px" }}>
-                        {p.en_lista_negra  ? <Badge label="BLOQUEADO"    color="#ff4444" /> :
-                         p.es_anomalo      ? <Badge label="ANÓMALO"      color="#ff9966" /> :
-                         p.ya_en_posicion  ? <Badge label="EN POSICIÓN"  color="#f7931a" /> :
-                         isOpp             ? <Badge label="OPORTUNIDAD"  color="#00ff88" /> :
-                                             <Badge label="BAJO THRESHOLD" color="#444" />}
+                        {p.en_lista_negra  ? <Badge label="BLOQUEADO"      color="#ff4444" /> :
+                         p.es_anomalo      ? <Badge label="ANÓMALO"        color="#ff9966" /> :
+                         p.ya_en_posicion  ? <Badge label="EN POSICIÓN"    color="#f7931a" /> :
+                         isBull            ? <Badge label="OPORTUNIDAD ▲"  color="#00ff88" /> :
+                         isBear            ? <Badge label="BEAR (no op.)"  color="#555"    /> :
+                                             <Badge label="BAJO THRESHOLD" color="#333"    />}
                       </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
+            </div>
           </div>
         )}
 
