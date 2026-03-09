@@ -17,7 +17,25 @@ El resultado es una posición **delta-neutral**: si el precio sube o baja, las d
 
 ### ¿Cuándo entra el bot?
 
-El bot entra cuando el **predicted funding rate** supera el 0.05%. El predicted es el estimado del próximo pago, calculado en tiempo real como la diferencia entre el precio mark y el precio index de Binance. Es la señal más temprana disponible antes de que se concrete el pago.
+El bot no usa el funding rate actual como señal — ese ya pasó. Usa el **predicted funding rate**, que es el estimado del próximo pago calculado en tiempo real como la diferencia porcentual entre el precio mark y el precio index de Binance:
+
+```
+predicted = (markPrice - indexPrice) / indexPrice
+```
+
+Cuando hay muchos longs en el mercado, el precio de los futuros (mark) sube por encima del precio real del activo (index), y ese spread positivo anticipa que el próximo funding va a ser positivo. El bot lo detecta antes de que se concrete el pago.
+
+Para que el bot abra una posición, se tienen que cumplir **todas** estas condiciones al mismo tiempo:
+
+- El predicted funding rate supera el **0.05%** (threshold de entrada)
+- El volumen negociado en las últimas 24hs supera los **$10M** en USDT (filtro de liquidez)
+- El funding no es **anómalo** — si es más de 5 veces el promedio histórico del par, se ignora porque puede ser un dato erróneo o una situación irrepetible
+- No hay ya una posición abierta en ese par
+- El par no está en **lista negra** (bloqueado 24hs tras un stop loss)
+- No se alcanzó el **máximo de 4 posiciones simultáneas**
+- El bot no está en pausa por **circuit breaker**, pérdida diaria o stop loss global
+
+Cuando hay varios pares que cumplen todas las condiciones al mismo tiempo, el bot elige primero el que tenga el **score más alto** — un puntaje compuesto que combina la magnitud del funding (50%), el volumen del par (30%) y la estabilidad histórica de su funding rate (20%).
 
 ### ¿Cuándo sale?
 
