@@ -362,7 +362,10 @@ export default function App() {
                   const isBear = (p.predicted_funding_rate || 0) <= -0.0005;
                   const isAnom = p.es_anomalo;
                   return (
-                    <tr key={p.symbol} style={{ borderBottom: "1px solid #111" }}>
+                    <tr key={p.symbol}
+                      onMouseEnter={e => e.currentTarget.style.background = "#161616"}
+                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                      style={{ borderBottom: "1px solid #111", transition: "background 0.15s", cursor: "default" }}>
                       <td style={{ padding: "12px 14px", fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 700 }}>
                         {isBull && !isAnom && <span style={{ color: "#f7931a", marginRight: 6 }}>●</span>}
                         {isAnom && <span style={{ color: "#ff4444", marginRight: 6 }}>⚠</span>}
