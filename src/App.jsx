@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 // Config — cambiá esta URL por la IP de tu droplet
 // =============================================================================
 const API_URL = import.meta.env.VITE_API_URL || "http://178.128.231.61:8000";
-const POLL_MS = 5000;
+const POLL_MS = 8000;
 
 // =============================================================================
 // Helpers
