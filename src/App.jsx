@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 // Config — cambiá esta URL por la IP de tu droplet
 // =============================================================================
 const API_URL = import.meta.env.VITE_API_URL || "http://178.128.231.61:8000";
-const POLL_MS = 8000;
+const POLL_MS = 5000;
 
 // =============================================================================
 // Helpers
@@ -358,7 +358,7 @@ export default function App() {
               </thead>
               <tbody>
                 {([...(scanner?.pares || [])].sort((a, b) => (b.predicted_funding_rate || 0) - (a.predicted_funding_rate || 0))).map(p => {
-                  const isBull = (p.predicted_funding_rate || 0) >= 0.0005;
+                  const isBull = (p.predicted_funding_rate || 0) >= 0.0010;
                   const isBear = (p.predicted_funding_rate || 0) <= -0.0005;
                   const isAnom = p.es_anomalo;
                   return (
